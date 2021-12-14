@@ -50,6 +50,8 @@ void main()
 	reg_spimaster_config = 0xa002;	// Enable, prescaler = 2,
                                         // connect to housekeeping SPI
 
+    reg_wb_enable = 1;
+
 	// Connect the housekeeping SPI to the SPI master
 	// so that the CSB line is not left floating.  This allows
 	// all of the GPIO pins to be used for user functions.
@@ -81,7 +83,7 @@ void main()
 	reg_mprj_datal = 0xAB600000;
 
     reg_mprj_slave = 0x00002710;
-    if (reg_mprj_slave == 0x2752) {
+    if (reg_mprj_slave == 0x274F) {
         reg_mprj_datal = 0xAB610000;
     } else {
         reg_mprj_datal = 0xAB600000;
