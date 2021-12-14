@@ -25,6 +25,10 @@ CARAVEL_VERILOG_PATH  = $(CARAVEL_PATH)/verilog
 CARAVEL_RTL_PATH = $(CARAVEL_VERILOG_PATH)/rtl
 CARAVEL_BEHAVIOURAL_MODELS = $(CARAVEL_VERILOG_PATH)/dv/caravel
 
+MCW_ROOT ?= ../../../caravel_mgmt_soc_litex
+MCW_VERILOG_PATH  = $(MCW_ROOT)/verilog
+MCW_RTL_PATH  = $(MCW_VERILOG_PATH)/rtl
+
 ## User Project Pointers
 UPRJ_VERILOG_PATH ?= ../../../verilog
 UPRJ_RTL_PATH = $(UPRJ_VERILOG_PATH)/rtl
@@ -49,12 +53,12 @@ hex:  ${PATTERN:=.hex}
 %.vvp: %_tb.v %.hex
 ifeq ($(SIM),RTL)
 	iverilog $(SIM_DEFINES) -I $(PDK_PATH) \
-	-I $(CARAVEL_BEHAVIOURAL_MODELS) -I $(CARAVEL_RTL_PATH) \
+	-I $(CARAVEL_BEHAVIOURAL_MODELS) -I $(CARAVEL_RTL_PATH) -I $(MCW_VERILOG_PATH) -I $(MCW_RTL_PATH) \
 	-I $(UPRJ_BEHAVIOURAL_MODELS)    -I $(UPRJ_RTL_PATH) \
 	$< -o $@ 
 else  
 	iverilog $(SIM_DEFINES) -DGL -I $(PDK_PATH) \
-	-I $(CARAVEL_BEHAVIOURAL_MODELS) -I $(CARAVEL_RTL_PATH) -I $(CARAVEL_VERILOG_PATH) \
+	-I $(CARAVEL_BEHAVIOURAL_MODELS) -I $(CARAVEL_RTL_PATH) -I $(CARAVEL_VERILOG_PATH) -I $(MCW_VERILOG_PATH) -I $(MCW_RTL_PATH) \
 	-I $(UPRJ_BEHAVIOURAL_MODELS) -I$(UPRJ_RTL_PATH)   -I $(UPRJ_VERILOG_PATH) \
 	$< -o $@ 
 endif
@@ -77,8 +81,14 @@ check-env:
 ifndef PDK_ROOT
 	$(error PDK_ROOT is undefined, please export it before running make)
 endif
+ifndef CARAVEL_ROOT
+	$(error CARAVEL_ROOT is undefined, please export it before running make)
+endif
 ifeq (,$(wildcard $(PDK_ROOT)/sky130A))
 	$(error $(PDK_ROOT)/sky130A not found, please install pdk before running make)
+endif
+ifeq (,$(wildcard $(CARAVEL_ROOT)))
+	$(error $(CARAVEL_ROOT) not found, please clone it before running make)
 endif
 ifeq (,$(wildcard $(GCC_PATH)/$(GCC_PREFIX)-gcc ))
 	$(error $(GCC_PATH)/$(GCC_PREFIX)-gcc is not found, please export GCC_PATH and GCC_PREFIX before running make)
